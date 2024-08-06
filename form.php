@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Kwitansi</title>
+    <title>Kwitansi PUKPDTSKBS</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
@@ -70,13 +70,14 @@
             });
 
             doc.addImage(imgData, "PNG", 80, 95, 50, 50); // Menambahkan gambar stempel
+            doc.text("Pengurus PUK PDTSKBS", 105, 160, { align: "center" }); // Menggeser teks ini ke bawah agar tidak bertabrakan dengan stempel
             doc.save("kwitansi.pdf");
         }
     </script>
 </head>
 <body class="bg-gray-100 p-10">
     <div class="container mx-auto bg-white p-8 shadow-md rounded-lg">
-        <h2 class="text-2xl font-bold mb-6">Form Kwitansi</h2>
+        <h2 class="text-2xl font-bold mb-6">Kwitansi Cos PUK PDTSKBS</h2>
         <form>
             <div class="mb-4">
                 <label for="tanggal" class="block text-sm font-medium text-gray-700">Tanggal Pembayaran</label>
@@ -116,6 +117,7 @@
             <div class="flex justify-center mt-4">
                 <img src="stempel.png" alt="Stempel" class="w-24 h-auto">
             </div>
+            <p class="text-center mt-4">Pengurus PUK PDTSKBS</p>
         </div>
     </div>
 
