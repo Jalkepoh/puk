@@ -67,7 +67,7 @@
       const imgData = await getBase64Image(imgUrl);
 
       // Menambahkan teks
-      doc.text("Form Cetak Pembayaran", 20, 20);
+      doc.text("Tanda Terima Pembayaran", 20, 20);
       doc.text(`Nama: ${name}`, 20, 30);
       doc.text(`Tanggal: ${date}`, 20, 40);
       doc.text(`Nominal: ${amount}`, 20, 50);
