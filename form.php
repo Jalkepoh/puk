@@ -1,133 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kwitansi PUKPDTSKBS</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script>
-        function terbilangToRupiah(terbilang) {
-            const numberWords = {
-                'nol': 0, 'satu': 1, 'dua': 2, 'tiga': 3, 'empat': 4,
-                'lima': 5, 'enam': 6, 'tujuh': 7, 'delapan': 8, 'sembilan': 9,
-                'puluh': 10, 'ratus': 100, 'seratus': 100, 'ribu': 1000, 'juta': 1000000
-            };
-
-            const words = terbilang.split(" ");
-            let total = 0;
-            let current = 0;
-
-            words.forEach(word => {
-                if (numberWords[word] !== undefined) {
-                    if (word === 'puluh' || word === 'ratus' || word === 'ribu' || word === 'juta') {
-                        current *= numberWords[word];
-                    } else {
-                        current += numberWords[word];
-                    }
-                } else {
-                    total += current;
-                    current = 0; // reset current for the next segment
-                }
-            });
-
-            total += current; // add any remaining value
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(total);
-        }
-
-        function updateNominal() {
-            const terbilang = document.getElementById("terbilang").value;
-            const nominal = terbilangToRupiah(terbilang);
-            document.getElementById("nominal").value = nominal;
-            document.getElementById("displayNominal").innerText = nominal;
-        }
-
-        async function cetakPDF() {
-            const { jsPDF } = window.jspdf;
-
-            const doc = new jsPDF();
-            const tanggal = document.getElementById("tanggal").value;
-            const terimaDari = document.getElementById("terimaDari").value;
-            const terbilang = document.getElementById("terbilang").value;
-            const untukPembayaran = document.getElementById("untukPembayaran").value;
-            const nominal = document.getElementById("nominal").value;
-
-            doc.text("Kwitansi", 105, 20, { align: "center" });
-            doc.text(`Tanggal Pembayaran: ${tanggal}`, 10, 40);
-            doc.text(`Terima Dari: ${terimaDari}`, 10, 50);
-            doc.text(`Terbilang: ${terbilang}`, 10, 60);
-            doc.text(`Untuk Pembayaran: ${untukPembayaran}`, 10, 70);
-            doc.text(`Nominal Rupiah: ${nominal}`, 10, 80);
-            doc.text("Terima kasih atas pembayaran Anda!", 105, 90, { align: "center" });
-
-            // Menambahkan gambar stempel jika ada
-            const imgData = await fetch("stempel.png").then(res => res.blob()).then(blob => {
-                return new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => resolve(reader.result);
-                    reader.readAsDataURL(blob);
-                });
-            });
-
-            doc.addImage(imgData, "PNG", 80, 95, 50, 50); // Menambahkan gambar stempel
-            doc.text("Pengurus PUK PDTSKBS", 105, 160, { align: "center" }); // Menggeser teks ini ke bawah agar tidak bertabrakan dengan stempel
-            doc.save("kwitansi.pdf");
-        }
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Cetak</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 p-10">
-    <div class="container mx-auto bg-white p-8 shadow-md rounded-lg">
-        <h2 class="text-2xl font-bold mb-6">Kwitansi Cos PUK PDTSKBS</h2>
-        <form>
-            <div class="mb-4">
-                <label for="tanggal" class="block text-sm font-medium text-gray-700">Tanggal Pembayaran</label>
-                <input type="date" id="tanggal" class="mt-1 p-2 border border-gray-300 rounded-md w-full">
-            </div>
-            <div class="mb-4">
-                <label for="terimaDari" class="block text-sm font-medium text-gray-700">Terima Dari</label>
-                <input type="text" id="terimaDari" class="mt-1 p-2 border border-gray-300 rounded-md w-full">
-            </div>
-            <div class="mb-4">
-                <label for="terbilang" class="block text-sm font-medium text-gray-700">Terbilang</label>
-                <input type="text" id="terbilang" class="mt-1 p-2 border border-gray-300 rounded-md w-full" oninput="updateNominal()">
-            </div>
-            <div class="mb-4">
-                <label for="untukPembayaran" class="block text-sm font-medium text-gray-700">Untuk Pembayaran</label>
-                <input type="text" id="untukPembayaran" class="mt-1 p-2 border border-gray-300 rounded-md w-full">
-            </div>
-            <div class="mb-4">
-                <label for="nominal" class="block text-sm font-medium text-gray-700">Nominal Rupiah</label>
-                <input type="text" id="nominal" class="mt-1 p-2 border border-gray-300 rounded-md w-full" readonly>
-            </div>
-            <button type="button" onclick="cetakPDF()" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md">Cetak PDF</button>
-        </form>
-    </div>
+<body class="bg-gray-100 p-6">
+  <div class="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-lg">
+    <h2 class="text-2xl font-bold mb-6">Form Cetak</h2>
+    <form id="formCetak">
+      <div class="mb-4">
+        <label for="name" class="block text-gray-700 font-bold mb-2">Nama:</label>
+        <input type="text" id="name" name="name" class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300" value="<?php echo isset($_GET['name']) ? htmlspecialchars($_GET['name']) : ''; ?>" readonly>
+      </div>
+      <div class="mb-4">
+        <label for="date" class="block text-gray-700 font-bold mb-2">Tanggal:</label>
+        <input type="date" id="date" name="date" class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300" value="<?php echo isset($_GET['date']) ? htmlspecialchars($_GET['date']) : ''; ?>" readonly>
+      </div>
+      <div class="mb-4">
+        <label for="amount" class="block text-gray-700 font-bold mb-2">Nominal:</label>
+        <input type="number" id="amount" name="amount" class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300" value="<?php echo isset($_GET['amount']) ? htmlspecialchars($_GET['amount']) : ''; ?>" readonly>
+      </div>
+      <div class="mb-4">
+        <label for="paymentMethod" class="block text-gray-700 font-bold mb-2">Pembayaran:</label>
+        <input type="text" id="paymentMethod" name="paymentMethod" class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300" value="<?php echo isset($_GET['paymentMethod']) ? htmlspecialchars($_GET['paymentMethod']) : ''; ?>" readonly>
+      </div>
+    </form>
+    <button id="cetakPDF" class="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-700">Cetak PDF</button>
+  </div>
 
-    <div id="receipt" class="hidden">
-        <div class="container mx-auto bg-white p-8 shadow-md rounded-lg">
-            <h2 class="text-3xl font-bold text-center mb-6">Kwitansi</h2>
-            <div class="flex justify-between items-center mb-4">
-                <p><strong>Tanggal Pembayaran:</strong> <span id="displayTanggal"></span></p>
-            </div>
-            <p><strong>Terima Dari:</strong> <span id="displayTerimaDari"></span></p>
-            <p><strong>Terbilang:</strong> <span id="displayTerbilang"></span></p>
-            <p><strong>Untuk Pembayaran:</strong> <span id="displayUntukPembayaran"></span></p>
-            <p class="text-xl font-bold mt-4"><strong>Nominal Rupiah:</strong> <span id="displayNominal"></span></p>
-            <p class="mt-6 text-center">Terima kasih atas pembayaran Anda!</p>
-            <div class="flex justify-center mt-4">
-                <img src="stempel.png" alt="Stempel" class="w-24 h-auto">
-            </div>
-            <p class="text-center mt-4">Pengurus PUK PDTSKBS</p>
-        </div>
-    </div>
+  <!-- Script jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    document.getElementById('cetakPDF').addEventListener('click', async function() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
 
-    <script>
-        const inputs = document.querySelectorAll("input");
-        inputs.forEach(input => {
-            input.addEventListener("input", () => {
-                document.getElementById(`display${input.id.charAt(0).toUpperCase() + input.id.slice(1)}`).innerText = input.value;
-            });
-        });
-    </script>
+      const name = document.getElementById('name').value;
+      const date = document.getElementById('date').value;
+      const amount = document.getElementById('amount').value;
+      const paymentMethod = document.getElementById('paymentMethod').value;
+
+      // Gambar yang ingin dimasukkan ke PDF
+      const imgUrl = 'TTDSTEMPEL.png'; // Ganti dengan path ke gambar
+      const imgData = await getBase64Image(imgUrl);
+
+      // Menambahkan teks
+      doc.text("Form Cetak Pembayaran", 20, 20);
+      doc.text(`Nama: ${name}`, 20, 30);
+      doc.text(`Tanggal: ${date}`, 20, 40);
+      doc.text(`Nominal: ${amount}`, 20, 50);
+      doc.text(`Pembayaran: ${paymentMethod}`, 20, 60);
+      
+      // Menambahkan gambar ke PDF
+      doc.addImage(imgData, 'PNG', 20, 70, 150, 50); // Ukuran gambar dapat disesuaikan
+
+      doc.save("form-pembayaran.pdf");
+    });
+
+    // Fungsi untuk mendapatkan gambar dalam format base64
+    function getBase64Image(imgUrl) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'Anonymous'; // Pastikan untuk mengizinkan CORS
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          const dataURL = canvas.toDataURL('image/png');
+          resolve(dataURL);
+        };
+        img.onerror = function() {
+          reject(new Error('Error loading image'));
+        };
+        img.src = imgUrl;
+      });
+    }
+  </script>
 </body>
 </html>
