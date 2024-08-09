@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Form Input</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 </head>
 <body class="bg-gray-100 p-6">
   <div class="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-lg">
@@ -52,11 +53,18 @@
         <!-- Data akan ditambahkan di sini -->
       </tbody>
     </table>
+    <div class="flex justify-end mt-4">
+      <button id="downloadExcel" class="bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700">Download Excel</button>
+    </div>
   </div>
   
   <script>
     document.getElementById('simpanButton').addEventListener('click', function() {
       addPayment();
+    });
+
+    document.getElementById('downloadExcel').addEventListener('click', function() {
+      downloadExcel();
     });
 
     function addPayment() {
@@ -93,6 +101,12 @@
       } else {
         alert('Mohon lengkapi semua kolom.');
       }
+    }
+
+    function downloadExcel() {
+      const table = document.getElementById('paymentsTable');
+      const wb = XLSX.utils.table_to_book(table, { sheet: "Payments" });
+      XLSX.writeFile(wb, "payments.xlsx");
     }
   </script>
 </body>
