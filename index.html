@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Form Input</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 </head>
 <body class="bg-gray-100 p-6">
   <div class="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-lg">
@@ -32,34 +31,10 @@
       </div>
     </form>
   </div>
-  
-  <div class="max-w-4xl mx-auto mt-6">
-    <table class="min-w-full bg-white border-collapse border border-gray-300">
-      <thead>
-        <tr>
-          <th class="border px-4 py-2">Nama</th>
-          <th class="border px-4 py-2">Tanggal</th>
-          <th class="border px-4 py-2">Nominal</th>
-          <th class="border px-4 py-2">Pembayaran</th>
-          <th class="border px-4 py-2">Aksi</th>
-        </tr>
-      </thead>
-      <tbody id="paymentsTable">
-        <!-- Data akan ditambahkan di sini -->
-      </tbody>
-    </table>
-    <div class="flex justify-end mt-4">
-      <button id="downloadExcel" class="bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700">Download Excel</button>
-    </div>
-  </div>
-  
+
   <script>
     document.getElementById('simpanButton').addEventListener('click', function() {
       addPayment();
-    });
-
-    document.getElementById('downloadExcel').addEventListener('click', function() {
-      downloadExcel();
     });
 
     function addPayment() {
@@ -69,36 +44,17 @@
       const paymentMethod = document.getElementById('paymentMethod').value;
 
       if (name && date && amount && paymentMethod) {
-        const table = document.getElementById('paymentsTable');
-        const newRow = table.insertRow();
+        // Simpan data ke local storage atau kirim ke server
+        // Misalnya, simpan di local storage untuk contoh ini:
+        const payments = JSON.parse(localStorage.getItem('payments')) || [];
+        payments.push({ name, date, amount, paymentMethod });
+        localStorage.setItem('payments', JSON.stringify(payments));
 
-        // Encode data for URL
-        const encodedName = encodeURIComponent(name);
-        const encodedDate = encodeURIComponent(date);
-        const encodedAmount = encodeURIComponent(amount);
-        const encodedPaymentMethod = encodeURIComponent(paymentMethod);
-
-        newRow.innerHTML = `
-          <td class="border px-4 py-2">${name}</td>
-          <td class="border px-4 py-2">${date}</td>
-          <td class="border px-4 py-2">${amount}</td>
-          <td class="border px-4 py-2">${paymentMethod}</td>
-          <td class="border px-4 py-2">
-            <a href="form.html?name=${encodedName}&date=${encodedDate}&amount=${encodedAmount}&paymentMethod=${encodedPaymentMethod}" target="_blank" class="bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700">Cetak</a>
-          </td>
-        `;
-
-        // Reset form
-        document.getElementById('paymentForm').reset();
+        // Redirect ke halaman tabel
+        window.location.href = "table.html";
       } else {
         alert('Mohon lengkapi semua kolom.');
       }
-    }
-
-    function downloadExcel() {
-      const table = document.getElementById('paymentsTable');
-      const wb = XLSX.utils.table_to_book(table, { sheet: "Payments" });
-      XLSX.writeFile(wb, "payments.xlsx");
     }
   </script>
 </body>
